@@ -1,16 +1,24 @@
 package main
 
 import (
-	"fmt"
+	"math/rand"
 	"sync"
+	"testing"
 )
 
-func main() {
+var values [10000]int64
 
-	values := []int64{2, 15, 3, 99, 110, 79, 1, 6, 78, 1, 56, 2, 101, 5}
+func init() {
+	for i := 0; i < 10000; i++ {
+		values[i] = rand.Int63()
+	}
 
-	//-----------------
-	{
+}
+func BenchmarkHeap(b *testing.B) {
+
+	// run the function b.N times
+	for n := 0; n < b.N; n++ {
+
 		injectChan := make(chan int64)
 		medianChan := make(chan float64)
 
@@ -19,9 +27,12 @@ func main() {
 
 		wg := sync.WaitGroup{}
 		wg.Add(1)
+		//var final float64
 		go func() {
 			for m := range medianChan {
-				fmt.Printf("median: %f\n", m)
+				//fmt.Printf("median: %f\n", m)
+				final := m
+				final++
 			}
 			wg.Done()
 		}()
@@ -34,10 +45,15 @@ func main() {
 		close(injectChan)
 		wg.Wait()
 
-	}
+		//fmt.Printf("median: %f\n", final)
 
-	//-----------------
-	{
+	}
+}
+
+func BenchmarkListMed(b *testing.B) {
+
+	// run the function b.N times
+	for n := 0; n < b.N; n++ {
 		injectChan := make(chan int64)
 		medianChan := make(chan float64)
 
@@ -48,7 +64,9 @@ func main() {
 		wg.Add(1)
 		go func() {
 			for m := range medianChan {
-				fmt.Printf("median: %f\n", m)
+				//fmt.Printf("median: %f\n", m)
+				final := m
+				final++
 			}
 			wg.Done()
 		}()
@@ -60,6 +78,7 @@ func main() {
 		}
 		close(injectChan)
 		wg.Wait()
-	}
 
+		// /fmt.Printf("median: %f\n", final)
+	}
 }

@@ -2,10 +2,6 @@ package main
 
 import "math"
 
-type MedianCalculator interface {
-	Init(count int, medianchan chan<- float64)
-	IngestInt(intchan <-chan int64)
-}
 type MedianCalculatorBasedOnHeap struct {
 	lowerHalf  *Heap
 	upperHalf  *Heap
